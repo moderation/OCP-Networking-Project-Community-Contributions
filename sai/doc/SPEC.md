@@ -57,7 +57,7 @@ Key assumptions, design decisions and API semantic clarifications:
 * If specific attributes are required for element creation, but not specified as part of the create function, the default value from either the container element or the top-level switching entity is used.
 * Deletion of an object that is referenced should fail (e.g. removal of router when interface exist).
 
-![SAI in a plausible switch system architecture](SAI_switch_system_architecture.png)  
+![SAI in a plausible switch system architecture](figures/SAI_switch_system_architecture.png)  
 _Figure 1 SAI in a plausible switch system architectureFigure 1 SAI in a plausible switch system architecture_
 
 # API description
@@ -72,7 +72,7 @@ The API is a collection of C-style interfaces exposed from the adapter. These in
 * Optional functionality. This is a set of additional interfaces which are not required, but enable various scenarios in a modern datacenter. Definition of these interfaces is common for all the vendors. These interfaces are not required by the switching stack to be exposed from the adapter. However, they become required if a given system configuration references any of these features.
 * Custom functionality. This is a set of interfaces that are unique for a vendor and is not standardized. The default adapter host is not aware of these interfaces and a custom adapter host can be supplied by the vendor to expose these interfaces to the switching stack. _We also intend to propose a more generic framework for exposing such functionality through default supplied adapter host in further drafts._
 
-Interfaces are discovered by querying for method tables through the mechanism described in “Functionality query” section.
+Interfaces are discovered by querying for method tables through the mechanism described in the [Functionality query](#functionality-query-saih) section.
 
 A near-future version of this specification will provide a mechanism for extending the functionality of mandatory and optional interfaces though custom attributes definition.
 
@@ -84,11 +84,11 @@ After adapter module load, adapter host acquires addresses of the three well-kno
 
 After that `sai_api_initialize()` is called. Function is supplied with method table of services provided by the adapter host to adapter module. Note: SDK initialization should NOT be performed here. This function is just to take care of any platform-specific differences related to module loading, and generally should be very simple. After initialization, `sai_api_query()` can be used for retrieval of various methods tables for SAI functionalities.
 
-Support for functionality versioning: if either signature or semantics of any function of a method table changes, new sai_api_id must be introduced (e.g. SAI_API_VLAN2). Adapter Host starts inquiry of functionality method table from the highest version that is known to Adapter Host. If newer API is not available, Adapter Host is free to fallback to any earlier or the first version. If the first version of the mandatory functionality category is not available, Adapter Host fails the adapter startup process.
+Support for functionality versioning: if either signature or semantics of any function of a method table changes, new `sai_api_id` must be introduced (e.g. `SAI_API_VLAN2`). Adapter Host starts inquiry of functionality method table from the highest version that is known to Adapter Host. If newer API is not available, Adapter Host is free to fallback to any earlier or the first version. If the first version of the mandatory functionality category is not available, Adapter Host fails the adapter startup process.
 
 Once all mandatory functionalities are successfully queried, optional functionalities are requested. Failure to discover optional functionality does not lead to a failure of the system startup.
 
-After all the functionalities being retrieved, Adapter Host proceeds to exercising SAI_API_SWITCH functionality.
+After all the functionalities being retrieved, Adapter Host proceeds to exercising `SAI_API_SWITCH` functionality.
 
 For example, first method that Adapter Host calls is `sai_initialize_switch()` that performs full SDK initialization. In a system where there are multiple Adapter Hosts, only one of them calls the above function. Others will call `sai_connect_switch()` to connect to the SDK once the SDK has been initialized. The call to `sai_connect_switch()` will fail if the SDK hasn’t been initialized. The `sai_intialize_switch()` function takes the following parameters:
 
@@ -97,7 +97,7 @@ For example, first method that Adapter Host calls is `sai_initialize_switch()` t
 * name of corresponding microcode
 * callbacks table
 
-The profile_id is used by the adapter to retrieve a profile which is a list of key-value string pairs that contain vendor-defined settings. Once the adapter has the profile id, it can use the function `profile_get_value()` and `profile_get_next_value()` from `service_method_table_t` to get the key-value string pairs, such as the SDK_LIBRARY_PATH, NPU_CONFIG_FILE_PATH. The service_method_table_t is provided by the adapter host during `sai_api_intialize()`.
+The `profile_id` is used by the adapter to retrieve a profile which is a list of key-value string pairs that contain vendor-defined settings. Once the adapter has the profile id, it can use the function `profile_get_value()` and `profile_get_next_value()` from `service_method_table_t` to get the key-value string pairs, such as the `SDK_LIBRARY_PATH`, `NPU_CONFIG_FILE_PATH`. The `service_method_table_t` is provided by the adapter host during `sai_api_intialize()`.
 
 Format and contents of the “hardware id” string is defined by the vendor and contains enough information to identify the device. For example it can contain PCIe location.
 
@@ -114,24 +114,24 @@ Finally, Adapter Host unloads the adapter module.
 
 # Specification contents and timeline
 
-For the list of accepted features please see the History section at the end of the specification.
+For the list of accepted features please see the [History](#history) section at the end of the specification.
 
 Summary of supported functionalities is given in the table below:
 
 | Functionality | Description | Category | Version
 | ------------- | ----------- | -------- | -------
-| sai_switch_api_t | Top-level switch object | Mandatory | 0.9.1
-| sai_port_api_ | Port management | Mandatory | 0.9.1
-| sai_fdb_api_t | Forwarding database | Mandatory | 0.9.1
-| sai_vlan_api_t | VLAN management | Mandatory | 0.9.1
-| sai_vr_api_t | Virtual router | Mandatory | 0.9.1
-| sai_route_interface_api_t | Routing interface | Mandatory | 0.9.1
-| sai_route_api_t | Routing table | Mandatory | 0.9.1
-| sai_neighbor_api_t | Neighbor table | Mandatory | 0.9.1
-| sai_next_hop_t | Next hop table | Mandatory | 0.9.1
-| sai_next_hop_api_t | Next hop group | Mandatory | 0.9.1
-| sai_qos_api_t | Quality of service | Mandatory | 0.9.1
-| sai_acl_api_t | ACL management | Mandatory | 0.9.1
+| `sai_switch_api_t` | Top-level switch object | Mandatory | 0.9.1
+| `sai_port_api_t` | Port management | Mandatory | 0.9.1
+| `sai_fdb_api_t` | Forwarding database | Mandatory | 0.9.1
+| `sai_vlan_api_t` | VLAN management | Mandatory | 0.9.1
+| `sai_vr_api_t` | Virtual router | Mandatory | 0.9.1
+| `sai_route_interface_api_t` | Routing interface | Mandatory | 0.9.1
+| `sai_route_api_t` | Routing table | Mandatory | 0.9.1
+| `sai_neighbor_api_t` | Neighbor table | Mandatory | 0.9.1
+| `sai_next_hop_t` | Next hop table | Mandatory | 0.9.1
+| `sai_next_hop_api_t` | Next hop group | Mandatory | 0.9.1
+| `sai_qos_api_t` | Quality of service | Mandatory | 0.9.1
+| `sai_acl_api_t` | ACL management | Mandatory | 0.9.1
 | | LAG | Mandatory | 0.9.2
 | | STP | Mandatory | 0.9.2
 | | Control packet send/receive | Mandatory | 0.9.2
@@ -152,12 +152,12 @@ Areas that are proposed, considered or in progress, but not addressed in the cur
 | Statistics | Refine the definitions of statistic blocks; make standards-compliant.
 | Statistics | Allow for vendor-specific diagnostics through stats
 | Statistics | Consider `clear_stats_in_hadrware()`. Its usage is a bit unclear and may break apps in multiple-readers scenarios.
-| Diagnostics | Provide tracing function in services_t table from Adapter Host.
+| Diagnostics | Provide tracing function in `services_t` table from Adapter Host.
 | Panel-to-switch-port table | Provide vendor-defined translation table from panel to switch ports, as well as port configuration setting (speeds, 10G/40G, copper/optics). This needs clarification ASAP.
-| sai_status_t | Encode functionality into sai_status_t codes. Consider using sai_api_id_t.
-| sai_status_t | Annotate methods with allowed error codes
-| sai_status_t | Split some structures to key and non-key versions
-| Function comments | Use doxygen
+| `sai_status_t` | Encode functionality into `sai_status_t` codes. Consider using `sai_api_id_t`.
+| `sai_status_t` | Annotate methods with allowed error codes
+| `sai_status_t` | Split some structures to key and non-key versions
+| Function comments | Use [doxygen](http://www.stack.nl/~dimitri/doxygen/)
 | OEM-specific initialization | Provide a way to load and run OEM/ODM-supplied initialization code which may use adapter private APIs.
 | VLAN mapping | Provide external to internal VLAN mapping
 | FDB event throttling | Provide a way to throttle FDB notifications
@@ -173,19 +173,19 @@ Areas that are proposed, considered or in progress, but not addressed in the cur
 # Data Types (saitypes.h)
 
 File contains cross-platform definitions for data types used in SAI.
-* Defines cross-platform sai_ip_address_t as union of ipv4 and ipv6 addresses.
-* Defines cross-platform sai_ip_prefix_t as union of ipv4 and ipv4 prefixes.
-* The sai_mac_t is defined as uint8_t[6] in network order with mac[0] to be the first byte of the mac address.
-* sai_attribute_value_t is the value of all sai attributes. It is defined as a union of all base sai types defined in this header file. sai_uint64_t u64 defined in the sai_attribute_value_t is used for all sai attribute values whose base type is uint8_t, uint16_t, uint32_t and uint64_t, whereas sai_int64_t s64 is used for all values whose base type is int8_t, int16_t, int32_t and int64_t.
+* Defines cross-platform `sai_ip_address_t` as union of ipv4 and ipv6 addresses.
+* Defines cross-platform `sai_ip_prefix_t` as union of ipv4 and ipv4 prefixes.
+* The `sai_mac_t` is defined as `uint8_t[6]` in network order with `mac[0]` to be the first byte of the mac address.
+* `sai_attribute_value_t` is the value of all sai attributes. It is defined as a union of all base sai types defined in this header file. `sai_uint64_t` u64 defined in the `sai_attribute_value_t` is used for all sai attribute values whose base type is `uint8_t`, `uint16_t`, `uint32_t` and `uint64_t`, whereas `sai_int64_t s64` is used for all values whose base type is `int8_t`, `int16_t`, `int32_t` and `int64_t`.
 
 # Status codes (saistatus.h)
 List of status codes returned from the SAI methods.
 
-A number of attributes can be passed to the create_sai_object function where sai_object can be any sai object such as router interface, next hop. In case the create function call fails due to attribute related errors such as invalid attribute, invalid attribute value, unsupported attribute, and unimplemented attribute, saistatus.h allows the return code to convey which attribute causes the error. The saistatus.h defines a base index and maximum index for all these four types of attribute related errors. When you get an error code that falls into their defined ranges, the offset from its corresponding base index denotes that attribute that causes the failure. For example, if you pass 5 attributes into a create_sai_object call, and the return code (rc) is 0x00010003. You can first use SAI_STATUS_IS_INVALID_ATTRIBUTE(rc) to determine if the error is due to invalid attribute or not. In this case, the answer is yes. Then, you can subtract the return code with SAI_STATUS_INVALID_ATTRIBUTE_0 to get the offset. In this case, you will get 3 meaning the 4th attribute in the call is an invalid attribute.
+A number of attributes can be passed to the `create_sai_object` function where `sai_object` can be any sai object such as router interface, next hop. In case the create function call fails due to attribute related errors such as invalid attribute, invalid attribute value, unsupported attribute, and unimplemented attribute, saistatus.h allows the return code to convey which attribute causes the error. The saistatus.h defines a base index and maximum index for all these four types of attribute related errors. When you get an error code that falls into their defined ranges, the offset from its corresponding base index denotes that attribute that causes the failure. For example, if you pass 5 attributes into a `create_sai_object` call, and the return code (rc) is 0x00010003. You can first use `SAI_STATUS_IS_INVALID_ATTRIBUTE(rc)` to determine if the error is due to invalid attribute or not. In this case, the answer is yes. Then, you can subtract the return code with `SAI_STATUS_INVALID_ATTRIBUTE_0` to get the offset. In this case, you will get 3 meaning the 4th attribute in the call is an invalid attribute.
 
 # Functionality query (sai.h)
 
-**Mandatory**. Switch adapter entry point for interface retrieval. If a signature or semantics of any method of an interface changes, new sai_api_t needs to be introduced, e.g. SAI_API_VLAN2. Adapter must also expose previous versions (at least the first version) of the interface to allow interoperability with older Adapter Hosts. The Adapter Host will always query an interface starting with the highest version that it knows about, falling back to previous version(s). If the first version of a mandatory interface is not available, Adapter Host fails the startup.
+**Mandatory**. Switch adapter entry point for interface retrieval. If a signature or semantics of any method of an interface changes, new `sai_api_t` needs to be introduced, e.g. `SAI_API_VLAN2`. Adapter must also expose previous versions (at least the first version) of the interface to allow interoperability with older Adapter Hosts. The Adapter Host will always query an interface starting with the highest version that it knows about, falling back to previous version(s). If the first version of a mandatory interface is not available, Adapter Host fails the startup.
 
 Adapter must keep track of which versions adapter host is using in order to be able to update the capabilities of the top-level Switching Entity.
 
